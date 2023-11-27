@@ -1,0 +1,20 @@
+.main_frame {
+    padding: 4rem;
+}
+.side_frame {
+    padding: 4rem;
+    /*background-color: --bs-warning;
+    background-color: #FFDF39;*/
+    box-shadow: 10px -5px -5px black;
+}
+
+a {
+    color: black;
+}
+
+svg {
+    display: block;
+    margin: auto;
+    align-self: center;
+    margin-bottom: 2.95rem;
+}
