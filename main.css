@@ -10,11 +10,28 @@
 
 a {
     color: black;
+    text-decoration: none;
 }
 
 svg {
     display: block;
     margin: auto;
     align-self: center;
-    margin-bottom: 2.95rem;
+    margin-bottom: 0.95rem;
+    fill: black;
+}
+
+.tabbed-link {
+    margin-left: 3rem;
+    text-align: left;
+}
+
+.btn-warning {
+    background-color: #FFDF39;
+}
+
+.bg-dark {
+    color: #FFDF39;
+    background: #FFDF39;
+    background-color: #FFDF39 !important;
 }
