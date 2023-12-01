@@ -10,7 +10,7 @@
 
 a {
     color: black;
-    text-decoration: none;
+    /*text-decoration: none;*/
 }
 
 svg {
@@ -34,4 +34,12 @@ svg {
     color: #FFDF39;
     background: #FFDF39;
     background-color: #FFDF39 !important;
+}
+
+.main_frame > p {
+    text-align: justify;
+}
+
+.main_frame > p > img{
+    align: center;
 }
