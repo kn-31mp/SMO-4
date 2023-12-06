@@ -3,14 +3,11 @@
 }
 .side_frame {
     padding: 4rem;
-    /*background-color: --bs-warning;
-    background-color: #FFDF39;*/
     box-shadow: 10px -5px -5px black;
 }
 
 a {
     color: black;
-    /*text-decoration: none;*/
 }
 
 svg {
@@ -30,10 +27,8 @@ svg {
     background-color: #FFDF39;
 }
 
-.bg-dark {
-    color: #FFDF39;
-    background: #FFDF39;
-    background-color: #FFDF39 !important;
+.bg-yellow {
+    background-color: #FFDF39;
 }
 
 .main_frame > p {
