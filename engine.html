@@ -19,84 +19,86 @@
                 <p class="fs-5">
                     Введіть в поля вводу свої вхідні дані та натисніть кнопку внизу.
                 </p>
-                <form name="FormManyServ">
+                <form name="highLoadFrom">
                     <div class="mb-3">
-                        <label for="Nuser" class="form-label">
+                        <label for="userCount" class="form-label">
                             Кількість клієнтів
                         </label>
-                        <input type="text" name="Nuser" value="1000" size="10" class="form-control">
+                        <input type="text" name="userCount" value="1000" size="10" class="form-control">
                     </div>
                     <div class="mb-3">
-                        <label for="Nquery" class="form-label">
+                        <label for="requestCount" class="form-label">
                             Середня кількість запитів від одного клієнта за одну хвилину
                         </label>
-                        <input type="text" name="Nquery" value="10" size="10" class="form-control">
+                        <input type="text" name="requestCount" value="10" size="10" class="form-control">
                     </div>
                     <div class="mb-3">
-                        <label for="RazmPacReq" class="form-label">
+                        <label for="requestSize" class="form-label">
                             Середній розміт запиту до сервера (Кбіт)
                         </label>
-                        <input type="text" name="RazmPacReq" value="10" size="10" class="form-control">
+                        <input type="text" name="requestSize" value="10" size="10" class="form-control">
                     </div>
                     <div class="mb-3">
-                        <label for="Freq" class="form-label">
+                        <label for="processorFrequency" class="form-label">
                             Тактова частота процесору сервера (МГц) 
                         </label>
-                        <input type="text" name="Freq" value="1000" size="10" class="form-control">
+                        <input type="text" name="processorFrequency" value="1000" size="10" class="form-control">
                     </div>
                     <div class="mb-3">
-                        <label for="NTactPerOper" class="form-label">
+                        <label for="tactCountPerOperation" class="form-label">
                             Середня кількість тактів на обробку 1 операції
                         </label>
-                        <input type="text" name="NTactPerOper" value="10" size="10" class="form-control">
+                        <input type="text" name="tactCountPerOperation" value="10" size="10" class="form-control">
                     </div>
                     <div class="mb-3">
-                        <label for="NOperPerReq" class="form-label">
+                        <label for="operationCountPerRequest" class="form-label">
                             Середня кількість операцій для обробки 1 запиту
                         </label>
-                        <input type="text" name="NOperPerReq" value="500000" size="10" class="form-control">
+                        <input type="text" name="operationCountPerRequest" value="500000" size="10" class="form-control">
                     </div>
                     <div class="mb-3">
-                        <label for="RazmPacAns" class="form-label">
+                        <label for="responseSize" class="form-label">
                             Середній розмір відповіді клієнту (Kбіт)
                         </label>
-                        <input type="text" name="RazmPacAns" value="50" size="10" class="form-control">
+                        <input type="text" name="responseSize" value="50" size="10" class="form-control">
                     </div>
                     <div class="mb-3">
-                        <label for="LServ" class="form-label">
+                        <label for="serverCount" class="form-label">
                             Кількість серверів (обслуговуючих пристроїв)
                         </label>
-                        <input type="text" name="LServ" value="50" size="10" class="form-control">
+                        <input type="text" name="serverCount" value="50" size="10" class="form-control">
                     </div>
                     <div class="mb-3">
-                        <label for="ChannelSpeed" class="form-label">
+                        <label for="channelSpeed" class="form-label">
                             Швидкість каналу передачі даних (Кбіт/с) 
                         </label>
-                        <input type="text" name="ChannelSpeed" value="100000" size="10" class="form-control">
+                        <input type="text" name="channelSpeed" value="100000" size="10" class="form-control">
                     </div>
                     <div class="mb-3">
-                        <label for="NumLine" class="form-label">
+                        <label for="channelCount" class="form-label">
                             Кількість каналів прийому/передачі 
                         </label>
-                        <input type="text" name="NumLine" value="4" size="10" class="form-control">
+                        <input type="text" name="channelCount" value="4" size="10" class="form-control">
                     </div>
                     <div class="mb-4">
-                        <label for="ChannelType" class="form-label">
+                        <label for="channelType" class="form-label">
                             Тип каналу прийому/передачі
                         </label>
-                        <select name="ChannelType" class="form-select">
-                            <option value="Symplex">
+                        <select name="channelType" class="form-select">
+                            <option value="SIMPLEX">
                                 Напівдуплексний
                             </option>
-                            <option value="Duplex" selected>
+                            <option value="DUPLEX" selected>
                                 Дуплексний
                             </option>
                         </select> 
                     </div>
                     <div class="d-grid gap-1">
-                        <input type="button" class="btn btn-warning" onClick="parent.Results()" value="Вычислить" name="Button">
+                        <input type="button" class="btn btn-warning" onClick="calculateHighLoadParams()" value="Вычислить" name="Button">
                     </div>
                 </form>
+				<div id="high_load_calculation_output" class="mt-5">
+				</div>
             </div>
             <div class="col-3 shadow side_frame bg-yellow">
                     <svg width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
