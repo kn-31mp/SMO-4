@@ -52,9 +52,9 @@ function calculateHighLoadParams() {
 
     let serverSummaryHtml = "";
     serverSummaryHtml += "<ul>";
-    serverSummaryHtml += `<li>Интенсивность обработки заявок сервером (заявок/сек): ${Mu}</li>`;
-    serverSummaryHtml += `<li>Вероятность загрузки обслуживающего устройства (сервера): ${RoServ}</li>`;
-    serverSummaryHtml += `<li>Среднее время обслуживания заявки сервером (с): ${Ts}</li>`;
+    serverSummaryHtml += `<li>Інтенсивність обробки заявок сервером (заявок/сек): ${Mu}</li>`;
+    serverSummaryHtml += `<li>Імовірність завантаження обслуговуючого пристрою (сервера): ${RoServ}</li>`;
+    serverSummaryHtml += `<li>Середній час обслуговування заявки сервером (с): ${Ts}</li>`;
 
     let Pzagr = rLServ*RoServ; 
     let K1 = 0.0;
@@ -92,18 +92,18 @@ function calculateHighLoadParams() {
     let Gw = (1/(1-RoServ))*(Math.sqrt(C*RoServ*(1+RoServ-C*RoServ))); //отклонение количества элементов данных в очереди
     // parentElement.innerHTML += ("<li><p></p>Gw:   " +Gw);
     if (RoServ>=1) {
-        serverSummaryHtml += "<li>Cервер(ы) перегружен(ы)</li>";
+        serverSummaryHtml += "<li>Сервер(и) перевантажений(і)</li>";
     } else {
-        serverSummaryHtml += `<li>Среднее время, которое заявки должны ожидать в очереди сервера Tw (с): ${Tw}</li>`;
-        serverSummaryHtml += `<li>Среднее время, которое заявки  находятся в сервере вообще (с) Tq: ${Tq}</li>`;
-        serverSummaryHtml += `<li>Средняя длина очереди в сервер w: ${w}</li>`;
-        serverSummaryHtml += `<li>Среднее количество элементов данных в сервере q: ${q}</li>`;
-        serverSummaryHtml += `<li>Стандартное отклонение среднего времени нахождения заявки в сервере (с) GTq: ${GTq}</li>`;
-        serverSummaryHtml += `<li>Стандартное отклонение количества элементов данных в очереди Gw: ${Gw}</li>`;
+        serverSummaryHtml += `<li>Середній час, який заявки повинні очікувати в черзі сервера Tw (с): ${Tw}</li>`;
+        serverSummaryHtml += `<li>Середній час, який заявки перебувають у сервері взагалі (с) Tq: ${Tq}</li>`;
+        serverSummaryHtml += `<li>Середня довжина черги в сервер w: ${w}</li>`;
+        serverSummaryHtml += `<li>Середня кількість елементів даних у сервері q: ${q}</li>`;
+        serverSummaryHtml += `<li>Стандартне відхилення середнього часу перебування заявки в сервері (с) GTq: ${GTq}</li>`;
+        serverSummaryHtml += `<li>Стандартне відхилення кількості елементів даних у черзі Gw: ${Gw}</li>`;
         if (RoServ<0.5) {
-            serverSummaryHtml += `<li>Неэффективное использование сервера(ов)</li>`;
+            serverSummaryHtml += `<li>Неефективне використання сервера(ів)</li>`;
         } else {
-            serverSummaryHtml += `<li>Нагрузка на сервер(ы) нормальная</li>`;
+            serverSummaryHtml += `<li>Навантаження на сервер(и) нормальне</li>`;
         }
     }
     serverSummaryHtml += "</ul><hr />";
@@ -121,23 +121,23 @@ function calculateHighLoadParams() {
 
     let channelSendSummaryHtml = "";
     channelSendSummaryHtml += "<ul>"
-    channelSendSummaryHtml += `<li>Интенсивность поступления заявок от сервера (заявок/сек): ${LamdaSend}</li>`;
-    channelSendSummaryHtml += `<li>Время передачи одной заявки (сек): ${TSendQuery}</li>`;
-    channelSendSummaryHtml += `<li>Загруженность агрегированного канала передачи: ${pSend}</li>`;
-    channelSendSummaryHtml += `<li>Коеффициент использования агрегированного канала передачи: ${UispSend}</li>`;
-    channelSendSummaryHtml += `<li>Интенсивность трафика передачи: ${uSend}</li>`;
+    channelSendSummaryHtml += `<li>Інтенсивність надходження заявок від сервера (заявок/сек): ${LamdaSend}</li>`;
+    channelSendSummaryHtml += `<li>Час передавання однієї заявки (сек): ${TSendQuery}</li>`;
+    channelSendSummaryHtml += `<li>Завантаженість агрегованого каналу передачі: ${pSend}</li>`;
+    channelSendSummaryHtml += `<li>Коефіцієнт використання агрегованого каналу передачі: ${UispSend}</li>`;
+    channelSendSummaryHtml += `<li>Інтенсивність трафіку передавання: ${uSend}</li>`;
     
     if (UispSend>=1) {
-        channelSendSummaryHtml += "<li>Канал(ы) передачи перегружен(ы)</li>";
+        channelSendSummaryHtml += "<li>Канал(и) передачі перевантажений(і)</li>";
     } else {
         let NsrSend=UispSend/(1-UispSend); //Средняя длина очереди
         TNSend=TSendQuery*NsrSend*rNumLine;
-        channelSendSummaryHtml += `<li>Средняя длина очереди: ${NsrSend}</li>`;
+        channelSendSummaryHtml += `<li>Середня довжина черги: ${NsrSend}</li>`;
 
         if (UispSend<0.5) {
-            channelSendSummaryHtml += "<li>Неэффективное использование канал(ов) передачи</li>";
+            channelSendSummaryHtml += "<li>Неефективне використання канал(ів) передачі</li>";
         } else {
-            channelSendSummaryHtml += "<li>Нагрузка на канал(ы) передачи нормальная</li>";
+            channelSendSummaryHtml += "<li>Навантаження на канал(и) передачі нормальне</li>";
         }
     }
     channelSendSummaryHtml += "</ul><hr />";
@@ -148,26 +148,27 @@ function calculateHighLoadParams() {
     let summaryHtml = "<ul>";
     if ((UispSend>=1)||(RoServ>=1)||(UispRecv>=1)) {
         summaryHtml += " \
-            <li>Пользователь будет ждать ответа с каждым запросом все дольше, \
-            поскольку СМО не справляется с таким потоком данных. Очередь \
-            запросов будет возрастать до тех пор пока не переполнится \
-            буффер. После чего запросы вообще начнут теряться. Необходимо \
-            изменить параметры системы, чтобы она справлась с нагрузкой. \
-            Иначе система очень быстро не все пользователи получат ответы \
-            из-за перегрузки СМО.</li> \
+            <li>Користувач чекатиме відповіді з кожним запитом \
+			дедалі довше, оскільки СМО не справляється з таким \
+			потоком даних. Черга запитів зростатиме доти, \
+			доки не переповниться буфер. Після чого запити \
+			взагалі почнуть губитися. Необхідно змінити параметри \
+			системи, щоб вона впоралася з навантаженням. \
+			Інакше система дуже швидко не всі користувачі \
+			отримають відповіді через перевантаження СМО.</li> \
         ";
     } else {
         let Tuser_wait = TrecvQuery+TNRecv+Tq+TSendQuery+TNSend;
-        summaryHtml += `<li>Время, которое пользователь ждет ответа: ${Tuser_wait}</li>`;
+        summaryHtml += `<li>Час, який користувач чекає на відповідь: ${Tuser_wait}</li>`;
         let Tuser_waitMin = TrecvQuery+Ts+TSendQuery;
-        summaryHtml += `<li>Минимальное время, за которое пользователь получает ответ(без очереди): ${Tuser_waitMin}</li>`;
+        summaryHtml += `<li>Мінімальний час, за який користувач отримує відповідь (без черги): ${Tuser_waitMin}</li>`;
     }
 
-    summaryHtml += `<li>Cредняя скорость приема: ${ReceiveSpeed * UispRecv}</li>`;
-    summaryHtml += `<li>Cредняя скорость передачи: ${SendSpeed * UispSend}</li>`;
+    summaryHtml += `<li>Середня швидкість прийому: ${ReceiveSpeed * UispRecv}</li>`;
+    summaryHtml += `<li>Середня швидкість передачі: ${SendSpeed * UispSend}</li>`;
     if (rChannelType == SIMPLEX_CHANNEL_TYPE) {
-        summaryHtml += `<li>Максимальная скорость приема: ${ReceiveSpeed}</li>`;
-        summaryHtml += `<li>Максимальная скорость передачи: ${SendSpeed}</li>`;
+        summaryHtml += `<li>Максимальна швидкість приймання: ${ReceiveSpeed}</li>`;
+        summaryHtml += `<li>Максимальна швидкість передачі: ${SendSpeed}</li>`;
     }
     summaryHtml += "</ul>";
 
@@ -261,27 +262,27 @@ function _getAggregateChannelReceiveSummaryHtml(aggregateChannelResult) {
     channelReceiveSummaryHtml += "<div><ul>";
 
     const lambda = aggregateChannelResult['lambda'];
-    channelReceiveSummaryHtml += `<li>Интенсивность поступления заявок от пользователей (заявок/сек): ${lambda}</li>`;
+    channelReceiveSummaryHtml += `<li>Інтенсивність надходження заявок від користувачів (заявок/сек): ${lambda}</li>`;
 
     const timeToReceiveRequest = aggregateChannelResult['timeToReceiveRequest'];
-    channelReceiveSummaryHtml += `<li>Время получения одной заявки (сек): ${timeToReceiveRequest}</li>`;
+    channelReceiveSummaryHtml += `<li>Час отримання однієї заявки (сек): ${timeToReceiveRequest}</li>`;
 
     const channelLoad = aggregateChannelResult['channelLoad'];
-    channelReceiveSummaryHtml += `<li>Загруженность агрегированного канала приема (норма <1): ${channelLoad}</li>`;
+    channelReceiveSummaryHtml += `<li>Завантаженість агрегованого каналу прийому (норма <1): ${channelLoad}</li>`;
 
     const coefficientOfChannelUsage = aggregateChannelResult['coefficientOfChannelUsage'];
-    channelReceiveSummaryHtml += `<li>Коэффициэнт использования агрегированного канала приема: ${coefficientOfChannelUsage}</li>`;
+    channelReceiveSummaryHtml += `<li>Коефіцієнт використання агрегованого каналу прийому: ${coefficientOfChannelUsage}</li>`;
 
     if (coefficientOfChannelUsage >= 1) {
-        channelReceiveSummaryHtml += "<li>Канал(ы) приема перегружен(ы)</li>";
+        channelReceiveSummaryHtml += "<li>Канал(и) прийому перевантажений(і)</li>";
     } else {
         const averageQueueSize = aggregateChannelResult['averageQueueSize'];
-        channelReceiveSummaryHtml += `<li>Средняя длина очереди: ${averageQueueSize}</li>`;
+        channelReceiveSummaryHtml += `<li>Середня довжина черги: ${averageQueueSize}</li>`;
 
         if (coefficientOfChannelUsage<0.5) {
-            channelReceiveSummaryHtml += "<li>Неэффективное использование канал(ов) приема</li>";
+            channelReceiveSummaryHtml += "<li>Неефективне використання канал(ів) прийому</li>";
         } else {
-            channelReceiveSummaryHtml += "<li>Нагрузка на канал(ы) приема нормальная</li>";
+            channelReceiveSummaryHtml += "<li>Навантаження на канал(и) прийому нормальне</li>";
         };
     };
 
