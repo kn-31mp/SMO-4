@@ -12,167 +12,21 @@ function calculateHighLoadParams() {
 
     parentElement.innerHTML += '<div class="mb-3"><b>РЕЗУЛЬТАТИ ОБЧИСЛЕНЬ</b></div>';
 
-    const rNuser = highLoadParams['userCount'];
-    const rNquery = highLoadParams['requestCount'];
-    const rLServ = highLoadParams['serverCount'];
-    const rFreq = highLoadParams['processorFrequency'];
-    const rNTactPerOper = highLoadParams['tactCountPerOperation'];
-    const rNOperPerReq = highLoadParams['operationCountPerRequest'];
-    const rRazmPacReq = highLoadParams['requestSize'];
-    const rRazmPacAns = highLoadParams['responseSize'];
-    const rChannelType = highLoadParams['channelType'];
-    const rNumLine = highLoadParams['channelCount'];
-
-    const ReceiveSpeed = highLoadParams['receiveSpeed'];
-    const SendSpeed = highLoadParams['sendSpeed'];
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    const aggregateChannelResult = _calculateAggregateChannelResult(highLoadParams);
-    const channelReceiveSummaryHtml = _getAggregateChannelReceiveSummaryHtml(aggregateChannelResult);
+    const aggregateChannelReceiveResult = _calculateAggregateChannelReceiveResult(highLoadParams);
+    const channelReceiveSummaryHtml = _getAggregateChannelReceiveSummaryHtml(aggregateChannelReceiveResult);
     parentElement.innerHTML += channelReceiveSummaryHtml;
 
-    let Lamda = (rNuser*rNquery)/60; //интенсивность поступления заявок от пользователя [1/сек]
-    let TrecvQuery = rRazmPacReq/(ReceiveSpeed*rNumLine); //Время на получение одной заявки
-    let MuRecv = 1/TrecvQuery; //интенсивность приема
-    let RoRecv = Lamda/(MuRecv); //Загруженность канала приема
-    let UispRecv = Math.min(RoRecv*rNumLine,rNumLine)/rNumLine; //Коэффициэнт использования канала
-    let NsrRecv = UispRecv/(1-UispRecv); //Средняя длина очереди
-    let TNRecv = TrecvQuery*NsrRecv*rNumLine; //считаем что одна заявка передается только по 1 каналу
+    const serverOverloadProbabilityResult = _calculateServerOverloadProbabilityResult(highLoadParams);
+    const serverOverloadProbabilitySummaryHtml = _getServerOverloadProbabilitySummaryHtml(serverOverloadProbabilityResult);
+    parentElement.innerHTML += serverOverloadProbabilitySummaryHtml;
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    const aggregateChannelSendResult = _calculateAggregateChannelSendResult(highLoadParams);
+    const aggregateChannelSendSummaryHtml = _getAggregateChannelSendSummaryHtml(aggregateChannelSendResult);
+    parentElement.innerHTML += aggregateChannelSendSummaryHtml;
 
-    let DeltaTRecv = 60/(rNuser*rNquery); //Среднее время между поступлениями заявок от пользователя[сек]
-    let DeltaTServ = Math.max(TrecvQuery,DeltaTRecv); //Время между поступлениями заявок на сервер
-    let LamdaServ = 1/DeltaTServ; //Интенсивность поступления заявок на сервер
-    let Ttact = 1/(rFreq*1000000); //время одного такта в сек
-    let Ts = rNTactPerOper*rNOperPerReq*Ttact; //Вpемя обслуживания заявки процессором [сек]
-    let Mu = 1/Ts; //Интенсивность обслуживания заявок сервером
-    let RoServ = LamdaServ/(Mu*rLServ); //Вероятность загрузки сервера
-
-    let serverSummaryHtml = "";
-    serverSummaryHtml += "<ul>";
-    serverSummaryHtml += `<li>Інтенсивність обробки заявок сервером (заявок/сек): ${Mu}</li>`;
-    serverSummaryHtml += `<li>Імовірність завантаження обслуговуючого пристрою (сервера): ${RoServ}</li>`;
-    serverSummaryHtml += `<li>Середній час обслуговування заявки сервером (с): ${Ts}</li>`;
-
-    let Pzagr = rLServ*RoServ; 
-    let K1 = 0.0;
-    let Fact1 = 0.0;
-    for (let i=0; i<rLServ; i++) {
-        Fact1 = Math.max(Fact1, 1) * Math.max(i, 1);
-        K1=K1+(Math.pow(Pzagr,i))/Fact1;
-    }
-
-    let K2 = 0.0;
-    let Fact2 = 0.0;
-    for (let i=0; i<=rLServ; i++) {
-        Fact2=Math.max(Fact2, 1) * Math.max(i, 1);
-        K2=K2+(Math.pow(Pzagr,i))/Fact2;
-    }
-
-    let K = K1/K2;
-    //parentElement.innerHTML += ("<li><p></p>K1:   " +K1 );
-    //parentElement.innerHTML += ("<li><p></p>K2:   " +K2 );
-    //parentElement.innerHTML += ("<li><p></p>K:   " +K );
-    
-    let C = (1-K)/(1-RoServ*K); //Быстродействие системы ???
-    //parentElement.innerHTML += ("<li><p></p>C:   " +C);
-    
-    let w = C*RoServ/(1-RoServ); //Количество заявок в очереди
-    //parentElement.innerHTML += ("<li><p></p>w:   " +w );
-    let q = w+rLServ*RoServ;  //Количество заявок в системе сервера
-    //parentElement.innerHTML += ("<li><p></p>q:   " +q );
-    let Tw = (C/rLServ)*Ts/(1-RoServ); //Среднее время ожидания в очереди
-    //parentElement.innerHTML += ("<li><p></p>Tw:   " +Tw );
-    let Tq = Tw+Ts; //Среднее время нахождения на сервере
-    //parentElement.innerHTML += ("<li><p></p>Tq:   " +Tq );
-    let GTq = Ts/(rLServ*(1-RoServ))*(Math.sqrt(C*(2-C)+rLServ*rLServ*(1-RoServ)*(1-RoServ))); //отклонение времени нахождения заявки в системе
-    // parentElement.innerHTML += ("<li><p></p>GTq:   " +GTq );
-    let Gw = (1/(1-RoServ))*(Math.sqrt(C*RoServ*(1+RoServ-C*RoServ))); //отклонение количества элементов данных в очереди
-    // parentElement.innerHTML += ("<li><p></p>Gw:   " +Gw);
-    if (RoServ>=1) {
-        serverSummaryHtml += "<li>Сервер(и) перевантажений(і)</li>";
-    } else {
-        serverSummaryHtml += `<li>Середній час, який заявки повинні очікувати в черзі сервера Tw (с): ${Tw}</li>`;
-        serverSummaryHtml += `<li>Середній час, який заявки перебувають у сервері взагалі (с) Tq: ${Tq}</li>`;
-        serverSummaryHtml += `<li>Середня довжина черги в сервер w: ${w}</li>`;
-        serverSummaryHtml += `<li>Середня кількість елементів даних у сервері q: ${q}</li>`;
-        serverSummaryHtml += `<li>Стандартне відхилення середнього часу перебування заявки в сервері (с) GTq: ${GTq}</li>`;
-        serverSummaryHtml += `<li>Стандартне відхилення кількості елементів даних у черзі Gw: ${Gw}</li>`;
-        if (RoServ<0.5) {
-            serverSummaryHtml += `<li>Неефективне використання сервера(ів)</li>`;
-        } else {
-            serverSummaryHtml += `<li>Навантаження на сервер(и) нормальне</li>`;
-        }
-    }
-    serverSummaryHtml += "</ul><hr />";
-    parentElement.innerHTML += serverSummaryHtml;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
-
-    let DeltaTSend = Math.max(DeltaTServ,Ts); //Среднее время между поступлениями заявок от сервера[сек]
-    let LamdaSend = 1/DeltaTSend; //интенсивность поступления заявок от сервера [1/сек]
-    let TSendQuery = rRazmPacAns/(SendSpeed*rNumLine); //Время на отправление одной заявки
-    let MuSend = 1/TSendQuery; //интенсивность передачи
-    let uSend = 1/(rRazmPacAns/SendSpeed/rNumLine);
-    let pSend = (rRazmPacAns / ReceiveSpeed) * Lamda / rNumLine;
-    let UispSend = Math.min(pSend,1); //Коэффициэнт использования агрегированного канала
-
-    let channelSendSummaryHtml = "";
-    channelSendSummaryHtml += "<ul>"
-    channelSendSummaryHtml += `<li>Інтенсивність надходження заявок від сервера (заявок/сек): ${LamdaSend}</li>`;
-    channelSendSummaryHtml += `<li>Час передавання однієї заявки (сек): ${TSendQuery}</li>`;
-    channelSendSummaryHtml += `<li>Завантаженість агрегованого каналу передачі: ${pSend}</li>`;
-    channelSendSummaryHtml += `<li>Коефіцієнт використання агрегованого каналу передачі: ${UispSend}</li>`;
-    channelSendSummaryHtml += `<li>Інтенсивність трафіку передавання: ${uSend}</li>`;
-    
-    if (UispSend>=1) {
-        channelSendSummaryHtml += "<li>Канал(и) передачі перевантажений(і)</li>";
-    } else {
-        let NsrSend=UispSend/(1-UispSend); //Средняя длина очереди
-        TNSend=TSendQuery*NsrSend*rNumLine;
-        channelSendSummaryHtml += `<li>Середня довжина черги: ${NsrSend}</li>`;
-
-        if (UispSend<0.5) {
-            channelSendSummaryHtml += "<li>Неефективне використання канал(ів) передачі</li>";
-        } else {
-            channelSendSummaryHtml += "<li>Навантаження на канал(и) передачі нормальне</li>";
-        }
-    }
-    channelSendSummaryHtml += "</ul><hr />";
-    parentElement.innerHTML += channelSendSummaryHtml;
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-    let summaryHtml = "<ul>";
-    if ((UispSend>=1)||(RoServ>=1)||(UispRecv>=1)) {
-        summaryHtml += " \
-            <li>Користувач чекатиме відповіді з кожним запитом \
-			дедалі довше, оскільки СМО не справляється з таким \
-			потоком даних. Черга запитів зростатиме доти, \
-			доки не переповниться буфер. Після чого запити \
-			взагалі почнуть губитися. Необхідно змінити параметри \
-			системи, щоб вона впоралася з навантаженням. \
-			Інакше система дуже швидко не всі користувачі \
-			отримають відповіді через перевантаження СМО.</li> \
-        ";
-    } else {
-        let Tuser_wait = TrecvQuery+TNRecv+Tq+TSendQuery+TNSend;
-        summaryHtml += `<li>Час, який користувач чекає на відповідь: ${Tuser_wait}</li>`;
-        let Tuser_waitMin = TrecvQuery+Ts+TSendQuery;
-        summaryHtml += `<li>Мінімальний час, за який користувач отримує відповідь (без черги): ${Tuser_waitMin}</li>`;
-    }
-
-    summaryHtml += `<li>Середня швидкість прийому: ${ReceiveSpeed * UispRecv}</li>`;
-    summaryHtml += `<li>Середня швидкість передачі: ${SendSpeed * UispSend}</li>`;
-    if (rChannelType == SIMPLEX_CHANNEL_TYPE) {
-        summaryHtml += `<li>Максимальна швидкість приймання: ${ReceiveSpeed}</li>`;
-        summaryHtml += `<li>Максимальна швидкість передачі: ${SendSpeed}</li>`;
-    }
-    summaryHtml += "</ul>";
-
-    parentElement.innerHTML += summaryHtml;
+    const generalResult = _calculateGeneralResult(highLoadParams);
+    const generalSummaryHtml = _getGeneralSummaryHtml(generalResult);
+    parentElement.innerHTML += generalSummaryHtml;
 }
 
 function _retrieveHighLoadFormParams(highLoadSystemForm) {
@@ -205,7 +59,7 @@ function _calculateReceiveSpeed(highLoadParams) {
     const responseSize = highLoadParams['responseSize'];
     const channelType = highLoadParams['channelType'];
 
-    let receiveSpeed = '';
+    let receiveSpeed = 0;
     if (channelType == DUPLEX_CHANNEL_TYPE) {
         receiveSpeed = channelSpeed;
     } else if (channelType == SIMPLEX_CHANNEL_TYPE) {
@@ -231,62 +85,425 @@ function _calculateSendSpeed(highLoadParams) {
     return sendSpeed;
 }
 
-function _calculateAggregateChannelResult(highLoadParams) {
+function _calculateAggregateChannelReceiveResult(highLoadParams) {
     const userCount = highLoadParams['userCount'];
     const requestCount = highLoadParams['requestCount'];
     const requestSize = highLoadParams['requestSize'];
     const receiveSpeed = highLoadParams['receiveSpeed'];
     const channelCount = highLoadParams['channelCount'];
 
-    let lambda = (userCount * requestCount) / 60;
-    let timeToReceiveRequest = requestSize / (receiveSpeed * channelCount);
-    let receiveIntensity = 1 / timeToReceiveRequest;
-    let channelLoad = lambda / (receiveIntensity);
-    let coefficientOfChannelUsage = Math.min(channelLoad * channelCount, channelCount) / channelCount;
-    let averageQueueSize = coefficientOfChannelUsage / (1 - coefficientOfChannelUsage);
+    // Інтенсивність надходження заявок від користувачів (заявок/сек)
+    const lambda = (userCount * requestCount) / 60;
 
-    const aggregateChannelResult = {};
-    aggregateChannelResult['lambda'] = lambda;
-    aggregateChannelResult['timeToReceiveRequest'] = timeToReceiveRequest;
-    aggregateChannelResult['receiveIntensity'] = receiveIntensity;
-    aggregateChannelResult['channelLoad'] = channelLoad;
-    aggregateChannelResult['coefficientOfChannelUsage'] = coefficientOfChannelUsage;
-    aggregateChannelResult['averageQueueSize'] = averageQueueSize;
+    // Час отримання однієї заявки (сек)
+    const timeToReceiveRequest = requestSize / (receiveSpeed * channelCount);
 
-    return aggregateChannelResult;
+    // Інтенсивність надходження заявок на сервер
+    const receiveIntensity = 1 / timeToReceiveRequest;
+
+    // Завантаженість агрегованого каналу прийому (норма <1)
+    const channelLoad = lambda / receiveIntensity;
+
+    // Коефіцієнт використання агрегованого каналу прийому
+    const coefficientOfChannelUsage = Math.min(channelLoad * channelCount, channelCount) / channelCount;
+
+    // Середня довжина черги
+    const averageQueueLength = coefficientOfChannelUsage / (1 - coefficientOfChannelUsage);
+
+    // ???
+    const tNReceive = timeToReceiveRequest * averageQueueLength * channelCount;
+
+    const result = {};
+    result['lambda'] = lambda;
+    result['timeToReceiveRequest'] = timeToReceiveRequest;
+    result['receiveIntensity'] = receiveIntensity;
+    result['channelLoad'] = channelLoad;
+    result['coefficientOfChannelUsage'] = coefficientOfChannelUsage;
+    result['averageQueueLength'] = averageQueueLength;
+    result['tNReceive'] = tNReceive;
+
+    return result;
 }
 
-function _getAggregateChannelReceiveSummaryHtml(aggregateChannelResult) {
-    let channelReceiveSummaryHtml = "";
+function _getAggregateChannelReceiveSummaryHtml(aggregateChannelReceiveResult) {
+    let summaryHtml = "";
 
-    channelReceiveSummaryHtml += "<div><ul>";
+    summaryHtml += "<div><ul>";
 
-    const lambda = aggregateChannelResult['lambda'];
-    channelReceiveSummaryHtml += `<li>Інтенсивність надходження заявок від користувачів (заявок/сек): ${lambda}</li>`;
+    const lambda = aggregateChannelReceiveResult['lambda'];
+    summaryHtml += `<li>Інтенсивність надходження заявок від користувачів (заявок/сек): ${lambda}</li>`;
 
-    const timeToReceiveRequest = aggregateChannelResult['timeToReceiveRequest'];
-    channelReceiveSummaryHtml += `<li>Час отримання однієї заявки (сек): ${timeToReceiveRequest}</li>`;
+    const timeToReceiveRequest = aggregateChannelReceiveResult['timeToReceiveRequest'];
+    summaryHtml += `<li>Час отримання однієї заявки (сек): ${timeToReceiveRequest}</li>`;
 
-    const channelLoad = aggregateChannelResult['channelLoad'];
-    channelReceiveSummaryHtml += `<li>Завантаженість агрегованого каналу прийому (норма <1): ${channelLoad}</li>`;
+    const channelLoad = aggregateChannelReceiveResult['channelLoad'];
+    summaryHtml += `<li>Завантаженість агрегованого каналу прийому (норма <1): ${channelLoad}</li>`;
 
-    const coefficientOfChannelUsage = aggregateChannelResult['coefficientOfChannelUsage'];
-    channelReceiveSummaryHtml += `<li>Коефіцієнт використання агрегованого каналу прийому: ${coefficientOfChannelUsage}</li>`;
+    const coefficientOfChannelUsage = aggregateChannelReceiveResult['coefficientOfChannelUsage'];
+    summaryHtml += `<li>Коефіцієнт використання агрегованого каналу прийому: ${coefficientOfChannelUsage}</li>`;
 
     if (coefficientOfChannelUsage >= 1) {
-        channelReceiveSummaryHtml += "<li>Канал(и) прийому перевантажений(і)</li>";
+        summaryHtml += "<li>Канал(и) прийому перевантажений(і)</li>";
     } else {
-        const averageQueueSize = aggregateChannelResult['averageQueueSize'];
-        channelReceiveSummaryHtml += `<li>Середня довжина черги: ${averageQueueSize}</li>`;
+        const averageQueueLength = aggregateChannelReceiveResult['averageQueueLength'];
+        summaryHtml += `<li>Середня довжина черги: ${averageQueueLength}</li>`;
 
-        if (coefficientOfChannelUsage<0.5) {
-            channelReceiveSummaryHtml += "<li>Неефективне використання канал(ів) прийому</li>";
+        if (coefficientOfChannelUsage < 0.5) {
+            summaryHtml += "<li>Неефективне використання канал(ів) прийому</li>";
         } else {
-            channelReceiveSummaryHtml += "<li>Навантаження на канал(и) прийому нормальне</li>";
+            summaryHtml += "<li>Навантаження на канал(и) прийому нормальне</li>";
         };
     };
 
-    channelReceiveSummaryHtml += "</ul></div><hr />";
+    summaryHtml += "</ul></div><hr />";
 
-    return channelReceiveSummaryHtml;
+    return summaryHtml;
+}
+
+function _calculateServerOverloadProbabilityResult(highLoadParams) {
+    const userCount = highLoadParams['userCount'];
+    const requestCount = highLoadParams['requestCount'];
+    const requestSize = highLoadParams['requestSize'];
+    const receiveSpeed = highLoadParams['receiveSpeed'];
+    const channelCount = highLoadParams['channelCount'];
+    const processorFrequency = highLoadParams['processorFrequency'];
+    const tactCountPerOperation = highLoadParams['tactCountPerOperation'];
+    const operationCountPerRequest = highLoadParams['operationCountPerRequest'];
+    const serverCount = highLoadParams['serverCount'];
+
+    // Час отримання однієї заявки (сек)
+    const timeToReceiveRequest = requestSize / (receiveSpeed * channelCount);
+
+    // Середній час між надходженнями заявок від користувача [сек]
+    const avgServerReceiveTimeDelta = 60 / (userCount * requestCount);
+
+    // Час між надходженнями заявок на сервер
+    const serverReceiveTimeDelta = Math.max(timeToReceiveRequest, avgServerReceiveTimeDelta);
+
+    // Інтенсивність надходження заявок на сервер
+    const serverReceiveIntensity = 1 / serverReceiveTimeDelta;
+
+    // Довжина такту процесора на стороні сервера
+    const processorTikLength = 1 / (processorFrequency * 1000000);
+
+    // Середній час обслуговування заявки сервером [сек]
+    const avgServerRequestProcessTime = tactCountPerOperation * operationCountPerRequest * processorTikLength;
+
+    // Інтенсивність обробки заявок сервером (заявок/сек)
+    const serverRequestProcessIntensity = 1 / avgServerRequestProcessTime;
+
+    // Імовірність завантаження обслуговуючого пристрою (сервера)
+    const serverOverloadProbability = serverReceiveIntensity / (serverRequestProcessIntensity * serverCount);
+
+    const serverLoad = serverCount * serverOverloadProbability;
+
+    let k1 = 0.0;
+    let fact1 = 0.0;
+    for (let i = 0; i < serverCount; i++) {
+        fact1 = Math.max(fact1, 1) * Math.max(i, 1);
+        k1 = k1 + Math.pow(serverLoad, i) / fact1;
+    }
+
+    let k2 = 0.0;
+    let fact2 = 0.0;
+    for (let i = 0; i <= serverCount; i++) {
+        fact2 = Math.max(fact2, 1) * Math.max(i, 1);
+        k2 = k2 + Math.pow(serverLoad, i) / fact2;
+    }
+
+    const k = k1 / k2;
+
+    // Швидкодія системи ???
+    const c = (1 - k) / (1 - serverOverloadProbability * k);
+
+    // Середня довжина черги в сервер
+    const w = c * serverOverloadProbability / (1 - serverOverloadProbability);
+
+    // Середня кількість елементів даних у сервері
+    const q = w + serverCount * serverOverloadProbability;
+
+    // Середній час, який заявки повинні очікувати в черзі сервера
+    const tw = (c / serverCount) * avgServerRequestProcessTime / (1 - serverOverloadProbability);
+
+    // Середній час, який заявки перебувають у сервері взагалі (с)
+    const tq = tw + avgServerRequestProcessTime;
+
+    // Стандартне відхилення середнього часу перебування заявки в сервері (с)
+    const gtq = avgServerRequestProcessTime / (serverCount * (1 - serverOverloadProbability)) * (Math.sqrt(c * (2 - c) + serverCount * serverCount * (1 - serverOverloadProbability) * (1 - serverOverloadProbability)));
+
+    // Стандартне відхилення кількості елементів даних у черзі
+    const gw = (1 / (1 - serverOverloadProbability)) * (Math.sqrt(c * serverOverloadProbability * (1 + serverOverloadProbability - c * serverOverloadProbability)));
+
+    const result = {};
+    result['avgServerRequestProcessTime'] = avgServerRequestProcessTime;
+    result['serverRequestProcessIntensity'] = serverRequestProcessIntensity;
+    result['serverOverloadProbability'] = serverOverloadProbability;
+    result['tw'] = tw;
+    result['tq'] = tq;
+    result['w'] = w;
+    result['q'] = q;
+    result['gtq'] = gtq;
+    result['gw'] = gw;
+
+    return result;
+}
+
+function _getServerOverloadProbabilitySummaryHtml(serverOverloadProbabilityResult) {
+    let summaryHtml = "";
+    summaryHtml += "<ul>";
+
+    const avgServerRequestProcessTime = serverOverloadProbabilityResult['avgServerRequestProcessTime'];
+    summaryHtml += `<li>Середній час обслуговування заявки сервером (с): ${avgServerRequestProcessTime}</li>`;
+
+    const serverRequestProcessIntensity = serverOverloadProbabilityResult['serverRequestProcessIntensity'];
+    summaryHtml += `<li>Інтенсивність обробки заявок сервером (заявок/сек): ${serverRequestProcessIntensity}</li>`;
+
+    const serverOverloadProbability = serverOverloadProbabilityResult['serverOverloadProbability'];
+    summaryHtml += `<li>Імовірність завантаження обслуговуючого пристрою (сервера): ${serverOverloadProbability}</li>`;
+
+    if (serverOverloadProbability >= 1) {
+        summaryHtml += "<li>Сервер(и) перевантажений(і)</li>";
+    } else {
+        const tw = serverOverloadProbabilityResult['tw'];
+        summaryHtml += `<li>Середній час, який заявки повинні очікувати в черзі сервера Tw (с): ${tw}</li>`;
+
+        const tq = serverOverloadProbabilityResult['tq'];
+        summaryHtml += `<li>Середній час, який заявки перебувають у сервері взагалі (с) Tq: ${tq}</li>`;
+
+        const w = serverOverloadProbabilityResult['w'];
+        summaryHtml += `<li>Середня довжина черги в сервер w: ${w}</li>`;
+
+        const q = serverOverloadProbabilityResult['q'];
+        summaryHtml += `<li>Середня кількість елементів даних у сервері q: ${q}</li>`;
+
+        const gtq = serverOverloadProbabilityResult['gtq'];
+        summaryHtml += `<li>Стандартне відхилення середнього часу перебування заявки в сервері (с) GTq: ${gtq}</li>`;
+
+        const gw = serverOverloadProbabilityResult['gw'];
+        summaryHtml += `<li>Стандартне відхилення кількості елементів даних у черзі Gw: ${gw}</li>`;
+        if (serverOverloadProbability < 0.5) {
+            summaryHtml += `<li>Неефективне використання сервера(ів)</li>`;
+        } else {
+            summaryHtml += `<li>Навантаження на сервер(и) нормальне</li>`;
+        }
+    }
+    summaryHtml += "</ul><hr />";
+
+    return summaryHtml;
+}
+
+function _calculateAggregateChannelSendResult(highLoadParams) {
+    const userCount = highLoadParams['userCount'];
+    const requestCount = highLoadParams['requestCount'];
+    const processorFrequency = highLoadParams['processorFrequency'];
+    const tactCountPerOperation = highLoadParams['tactCountPerOperation'];
+    const operationCountPerRequest = highLoadParams['operationCountPerRequest'];
+    const requestSize = highLoadParams['requestSize'];
+    const responseSize = highLoadParams['responseSize'];
+    const channelCount = highLoadParams['channelCount'];
+    const receiveSpeed = highLoadParams['receiveSpeed'];
+    const sendSpeed = highLoadParams['sendSpeed'];
+
+    // Середній час між надходженнями заявок від користувача [сек]
+    const avgServerReceiveTimeDelta = 60 / (userCount * requestCount);
+
+    // Час отримання однієї заявки (сек)
+    const timeToReceiveRequest = requestSize / (receiveSpeed * channelCount);
+
+    // Час між надходженнями заявок на сервер
+    const serverReceiveTimeDelta = Math.max(timeToReceiveRequest, avgServerReceiveTimeDelta);
+
+    // Довжина такту процесора на стороні сервера
+    const processorTikLength = 1 / (processorFrequency * 1000000);
+
+    // Середній час обслуговування заявки сервером [сек]
+    const avgServerRequestProcessTime = tactCountPerOperation * operationCountPerRequest * processorTikLength;
+
+    // Інтенсивність надходження заявок від користувачів (заявок/сек)
+    const lambda = (userCount * requestCount) / 60;
+
+    // Середній час між надходженнями заявок від сервера [сек]
+    const avgReceiveDeltaTime = Math.max(serverReceiveTimeDelta, avgServerRequestProcessTime);
+
+    // Інтенсивність надходження заявок від сервера (заявок/сек)
+    const receiveIntensity = 1 / avgReceiveDeltaTime;
+
+    // Середній час передавання однієї заявки (сек)
+    const avgTransmissionTime = responseSize / (sendSpeed * channelCount);
+
+    // Інтенсивність передачі
+    const transmissionIntensity = 1 / avgTransmissionTime;
+
+    // Інтенсивність трафіку передавання
+    const trafficTransmissionIntensity = 1 / (responseSize / sendSpeed / channelCount);
+
+    // Завантаженість агрегованого каналу передачі
+    const transmissionChannelLoad = (responseSize / receiveSpeed) * lambda / channelCount;
+
+    // Коефіцієнт використання агрегованого каналу передачі
+    const transmissionChannelUsage = Math.min(transmissionChannelLoad, 1);
+
+    // Середня довжина черги
+    const avgQueueLength = transmissionChannelUsage / (1 - transmissionChannelUsage);
+
+    // ???
+    const tNSend = avgTransmissionTime * avgQueueLength * channelCount;
+
+
+    const result = {};
+    result['avgReceiveDeltaTime'] = avgReceiveDeltaTime;
+    result['receiveIntensity'] = receiveIntensity;
+    result['avgTransmissionTime'] = avgTransmissionTime;
+    result['transmissionIntensity'] = transmissionIntensity;
+    result['trafficTransmissionIntensity'] = trafficTransmissionIntensity;
+    result['transmissionChannelLoad'] = transmissionChannelLoad;
+    result['transmissionChannelUsage'] = transmissionChannelUsage;
+    result['avgQueueLength'] = avgQueueLength;
+    result['tNSend'] = tNSend;
+
+    return result;
+}
+
+function _getAggregateChannelSendSummaryHtml(aggregateChannelSendResult) {
+    let summaryHtml = "";
+    summaryHtml += "<ul>"
+
+    const receiveIntensity = aggregateChannelSendResult['receiveIntensity'];
+    summaryHtml += `<li>Інтенсивність надходження заявок від сервера (заявок/сек): ${receiveIntensity}</li>`;
+
+    const avgTransmissionTime = aggregateChannelSendResult['avgTransmissionTime'];
+    summaryHtml += `<li>Час передавання однієї заявки (сек): ${avgTransmissionTime}</li>`;
+
+    const transmissionChannelLoad = aggregateChannelSendResult['transmissionChannelLoad'];
+    summaryHtml += `<li>Завантаженість агрегованого каналу передачі: ${transmissionChannelLoad}</li>`;
+
+    const transmissionChannelUsage = aggregateChannelSendResult['transmissionChannelUsage'];
+    summaryHtml += `<li>Коефіцієнт використання агрегованого каналу передачі: ${transmissionChannelUsage}</li>`;
+
+    const trafficTransmissionIntensity = aggregateChannelSendResult['trafficTransmissionIntensity'];
+    summaryHtml += `<li>Інтенсивність трафіку передавання: ${trafficTransmissionIntensity}</li>`;
+
+    if (transmissionChannelUsage >= 1) {
+        summaryHtml += "<li>Канал(и) передачі перевантажений(і)</li>";
+    } else {
+        const avgQueueLength = aggregateChannelSendResult['avgQueueLength'];
+        summaryHtml += `<li>Середня довжина черги: ${avgQueueLength}</li>`;
+
+        if (transmissionChannelUsage < 0.5) {
+            summaryHtml += "<li>Неефективне використання канал(ів) передачі</li>";
+        } else {
+            summaryHtml += "<li>Навантаження на канал(и) передачі нормальне</li>";
+        }
+    }
+    summaryHtml += "</ul><hr />";
+
+    return summaryHtml
+}
+
+function _calculateGeneralResult(highLoadParams) {
+    const receiveSpeed = highLoadParams['receiveSpeed'];
+    const sendSpeed = highLoadParams['sendSpeed'];
+    const channelType = highLoadParams['channelType'];
+
+    const aggregateChannelReceiveResult = _calculateAggregateChannelReceiveResult(highLoadParams);
+    const serverOverloadProbabilityResult = _calculateServerOverloadProbabilityResult(highLoadParams);
+    const aggregateChannelSendResult = _calculateAggregateChannelSendResult(highLoadParams);
+
+    // Коефіцієнт використання агрегованого каналу прийому
+    const coefficientOfChannelUsage = aggregateChannelReceiveResult['coefficientOfChannelUsage'];
+
+    // Імовірність завантаження обслуговуючого пристрою (сервера)
+    const serverOverloadProbability = serverOverloadProbabilityResult['serverOverloadProbability'];
+
+    // Коефіцієнт використання агрегованого каналу передачі
+    const transmissionChannelUsage = aggregateChannelSendResult['transmissionChannelUsage'];
+
+    // Час отримання однієї заявки (сек)
+    const timeToReceiveRequest = aggregateChannelReceiveResult['timeToReceiveRequest'];
+
+    // ???
+    const tNReceive = aggregateChannelReceiveResult['tNReceive'];
+
+    // Середній час, який заявки перебувають у сервері взагалі (с)
+    const tq = serverOverloadProbabilityResult['tq'];
+
+    // Середній час обслуговування заявки сервером [сек]
+    const avgServerRequestProcessTime = serverOverloadProbabilityResult['avgServerRequestProcessTime'];
+
+    // Середній час передавання однієї заявки (сек)
+    const avgTransmissionTime = aggregateChannelSendResult['avgTransmissionTime'];
+
+    // ???
+    const tNSend = aggregateChannelSendResult['tNSend'];
+
+    // Час, який користувач чекає на відповідь
+    const userWaitTime = timeToReceiveRequest + tNReceive + tq + avgTransmissionTime + tNSend;
+
+    // Мінімальний час, за який користувач отримує відповідь (без черги)
+    const userWaitTimeMin = timeToReceiveRequest + avgServerRequestProcessTime + avgTransmissionTime;
+
+    // Середня швидкість прийому
+    const avgReceiveSpeed = receiveSpeed * coefficientOfChannelUsage;
+
+    // Середня швидкість передачі
+    const avgSendSpeed = sendSpeed * transmissionChannelUsage;
+
+    const result = {};
+    result['coefficientOfChannelUsage'] = coefficientOfChannelUsage;
+    result['serverOverloadProbability'] = serverOverloadProbability;
+    result['transmissionChannelUsage'] = transmissionChannelUsage;
+    result['userWaitTime'] = userWaitTime;
+    result['userWaitTimeMin'] = userWaitTimeMin;
+    result['avgReceiveSpeed'] = avgReceiveSpeed;
+    result['avgSendSpeed'] = avgSendSpeed;
+    result['channelType'] = channelType;
+    result['receiveSpeed'] = receiveSpeed;
+    result['sendSpeed'] = sendSpeed;
+
+    return result;
+}
+
+function _getGeneralSummaryHtml(generalResult) {
+    let summaryHtml = "";
+    summaryHtml += "<ul>";
+
+    const coefficientOfChannelUsage = generalResult['coefficientOfChannelUsage'];
+    const serverOverloadProbability = generalResult['serverOverloadProbability'];
+    const transmissionChannelUsage = generalResult['transmissionChannelUsage'];
+    if ((coefficientOfChannelUsage >= 1) || (serverOverloadProbability >= 1) || (transmissionChannelUsage >= 1)) {
+        summaryHtml += " \
+            <li>Користувач чекатиме відповіді з кожним запитом \
+            дедалі довше, оскільки СМО не справляється з таким \
+            потоком даних. Черга запитів зростатиме доти, \
+            доки не переповниться буфер. Після чого запити \
+            взагалі почнуть губитися. Необхідно змінити параметри \
+            системи, щоб вона впоралася з навантаженням. \
+            Інакше система дуже швидко не всі користувачі \
+            отримають відповіді через перевантаження СМО.</li> \
+        ";
+    } else {
+        const userWaitTime = generalResult['userWaitTime'];
+        summaryHtml += `<li>Час, який користувач чекає на відповідь: ${userWaitTime}</li>`;
+
+        const userWaitTimeMin = generalResult['userWaitTimeMin'];
+        summaryHtml += `<li>Мінімальний час, за який користувач отримує відповідь (без черги): ${userWaitTimeMin}</li>`;
+    }
+
+    const avgReceiveSpeed = generalResult['avgReceiveSpeed'];
+    summaryHtml += `<li>Середня швидкість прийому: ${avgReceiveSpeed}</li>`;
+
+    const avgSendSpeed = generalResult['avgSendSpeed'];
+    summaryHtml += `<li>Середня швидкість передачі: ${avgSendSpeed}</li>`;
+
+    const channelType = generalResult['channelType'];
+    if (channelType == SIMPLEX_CHANNEL_TYPE) {
+        const receiveSpeed = generalResult['receiveSpeed'];
+        summaryHtml += `<li>Максимальна швидкість приймання: ${receiveSpeed}</li>`;
+
+        const sendSpeed = generalResult['sendSpeed'];
+        summaryHtml += `<li>Максимальна швидкість передачі: ${sendSpeed}</li>`;
+    }
+    summaryHtml += "</ul>";
+
+    return summaryHtml;
 }
