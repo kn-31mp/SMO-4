@@ -7,10 +7,10 @@
         <link rel="stylesheet" href="css/bootstrap_5.3.2_min.css" />
         <link rel="stylesheet" href="css/main.css" />
     </head>
-    <body>
+    <body id="theory_old">
         <div class="container-fluid text-justify bg-body">
             <div class="row">
-                <div class="col-9 main_frame">
+                <div class="col-9 main-frame">
                     <div class="h1">
                         <div>Розрахунок параметрів</div>
                         <div>Систем масового обслуговування</div>
@@ -8089,56 +8089,78 @@
                         &nbsp;
                     </p>
                 </div>
-                <div class="col-3 shadow side_frame bg-yellow">
+                <div class="col-3 shadow side-frame bg-yellow">
                     <svg width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M18.6347 42.7125V35.1516L41.3503 14.3999V42.287H35.7859V39.1121H25.9665L31.0071 34.006H35.7859V26.8705L18.6347 42.7125Z" fill="#212529">
-                            
+                        <path d="M18.6347 42.7125V35.1516L41.3503 14.3999V42.287H35.7859V39.1121H25.9665L31.0071 34.006H35.7859V26.8705L18.6347 42.7125Z" fill="#212529">     
                         </path>
                         <path d="M51.5614 27.9224C57.0941 27.9224 60.8 32.3068 60.8 38.4659C60.8 43.2679 58.2685 47.5479 54.6148 48.383C53.4404 48.6701 52.7097 48.8006 52.3704 48.8006H50.6016V43.8942H51.8484C54.406 43.8942 55.6848 41.6759 55.6848 37.2132C55.6848 37.0827 55.5804 34.9688 54.1189 33.6378C53.5187 33.0897 52.9967 32.8287 52.5009 32.8287H48.6384V48.8006H43.4449V27.9224H51.5614Z" fill="#212529">
-                            
                         </path>
                         <path d="M11.6386 27.9224C6.10591 27.9224 2.40002 32.2024 2.40002 38.4659C2.40002 39.0661 2.47832 39.9795 2.6349 41.18C3.05247 44.4162 5.68835 47.7567 8.5852 48.383C9.7596 48.6701 10.5164 48.8006 10.8296 48.8006H43.5574V43.8942H11.3255C8.79398 43.8942 7.51519 41.6759 7.51519 37.2132C7.51519 36.9522 7.67178 36.2737 7.98495 35.1775C8.27203 34.1858 9.70741 32.8287 10.6991 32.8287H17.3541L19.7551 27.9224H11.6386Z" fill="#212529">
-                            
                         </path>
                     </svg>
                     <hr class="border-dark">
-                    <p>
-                        <a href="index.html" class="link-dark fs-5">
-                            <b>Головна сторінка</b>
-                        </a>
-                    </p>
-                    <p>
-                        <a href="engine.html" class="link-dark fs-5">
-                            <b>Розрахунок системи</b>
-                        </a>
-                    </p>
-                    <p>
-                        <a href="theory.html" class="link-dark fs-5">
-                            <b>Теоретичні відомості</b>
-                        </a>
-                    </p>
-                    <p class="tabbed-link">
-                        <a href="theory_1.html" class="link-dark fs-5">
-                            <b>1. Моделі черг в обчислювальних системах. Експоненційні системи зі змінними параметрами.</b>
-                        </a>
-                    </p>
-                    <p class="tabbed-link">
-                        <a href="theory_2.html" class="link-dark fs-5">
-                            <b>2. Теорія черг і розрахунок параметрів Intranet-мережі. Особливості застосування теорії черг і розрахунку параметрів Intranet-мережі.</b>
-                        </a>
-                    </p>
-                    <p class="tabbed-link">
-                        <a href="theory_3.html" class="link-dark fs-5">
-                            <b>3. Моделі програм. Методика моделювання ресурсів ВС. Моделі пристроїв-ресурсів і способи їх опису.</b>
-                        </a>
-                    </p>
-                    <p class="tabbed-link">
-                        <a href="theory_4.html" class="link-dark fs-5">
-                            <b>4. Канали зв'язку. Агрегування каналів.</b>
-                        </a>
-                    </p>
+                    <ul>
+                        <li>
+                            <a href="index.html" id="index_link">
+                                <div>Головна сторінка</div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="engine.html" id="engine_link">
+                                <div>
+                                    Розрахунок системи
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="theory.html" id="theory_link">
+                                <div>
+                                    Теоретичні відомості
+                                </div>
+                            </a>
+                            <ul>
+                                <li>
+                                    <a href="theory_1.html" id="theory_1_link">
+                                        <div>
+                                            1. Моделі черг 
+                                            в обчислювальних системах.
+                                            Експоненційні системи зі 
+                                            змінними параметрами
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="theory_2.html" id="theory_2_link">
+                                        <div>2. Теорія черг і розрахунок параметрів
+                                            Intranet-мережі. Особливості 
+                                            застосування теорії черг і розрахунку
+                                            параметрів Intranet-мережі
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="theory_3.html" id="theory_3_link">
+                                        <div>
+                                            3. Моделі програм. Методика моделювання
+                                            ресурсів ВС. Моделі пристроїв-ресурсів
+                                            і способи їх опису
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="theory_4.html" id="theory_4_link">
+                                        <div>
+                                            4. Канали зв'язку.
+                                            Агрегування каналів
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
+        <script type="text/javascript" src="js/nav_selector.js"></script>
     </body>
 </html>
