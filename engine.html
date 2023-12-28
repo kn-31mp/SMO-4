@@ -17,84 +17,161 @@
                 </div>
                 <hr class="border-black">
                 <p class="fs-5">
-                    Введіть в поля вводу свої вхідні дані та натисніть кнопку внизу.
+                    Введіть дані для розрахунку
+                    та натисніть кнопку внизу
                 </p>
                 <form name="highLoadFrom">
-                    <div class="mb-3">
-                        <label for="userCount" class="form-label">
-                            Кількість клієнтів
-                        </label>
-                        <input type="text" name="userCount" value="1000" size="10" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label for="requestCount" class="form-label">
-                            Середня кількість запитів від одного клієнта за одну хвилину
-                        </label>
-                        <input type="text" name="requestCount" value="10" size="10" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label for="requestSize" class="form-label">
-                            Середній розмір запиту до сервера (Кбіт)
-                        </label>
-                        <input type="text" name="requestSize" value="10" size="10" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label for="processorFrequency" class="form-label">
-                            Тактова частота процесору сервера (МГц) 
-                        </label>
-                        <input type="text" name="processorFrequency" value="1000" size="10" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label for="tactCountPerOperation" class="form-label">
-                            Середня кількість тактів на обробку 1 операції
-                        </label>
-                        <input type="text" name="tactCountPerOperation" value="10" size="10" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label for="operationCountPerRequest" class="form-label">
-                            Середня кількість операцій для обробки 1 запиту
-                        </label>
-                        <input type="text" name="operationCountPerRequest" value="500000" size="10" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label for="responseSize" class="form-label">
-                            Середній розмір відповіді клієнту (Kбіт)
-                        </label>
-                        <input type="text" name="responseSize" value="50" size="10" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label for="serverCount" class="form-label">
-                            Кількість серверів (обслуговуючих пристроїв)
-                        </label>
-                        <input type="text" name="serverCount" value="50" size="10" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label for="channelSpeed" class="form-label">
-                            Швидкість каналу передачі даних (Кбіт/с) 
-                        </label>
-                        <input type="text" name="channelSpeed" value="100000" size="10" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label for="channelCount" class="form-label">
-                            Кількість каналів прийому/передачі 
-                        </label>
-                        <input type="text" name="channelCount" value="4" size="10" class="form-control">
-                    </div>
-                    <div class="mb-4">
-                        <label for="channelType" class="form-label">
-                            Тип каналу прийому/передачі
-                        </label>
-                        <select name="channelType" class="form-select">
-                            <option value="SIMPLEX">
-                                Напівдуплексний
-                            </option>
-                            <option value="DUPLEX" selected>
-                                Дуплексний
-                            </option>
-                        </select> 
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="userCount" class="form-label">
+                                    Кількість клієнтів
+                                </label>
+                                <input
+                                    type="text"
+                                    id="userCount"
+                                    value="1000"
+                                    size="10"
+                                    class="form-control"
+                                >
+                            </div>
+                            <div class="mb-3">
+                                <label for="requestSize" class="form-label">
+                                    Середній розмір запиту до сервера (Кбіт)
+                                </label>
+                                <input
+                                    type="text"
+                                    id="requestSize"
+                                    value="10"
+                                    size="10"
+                                    class="form-control"
+                                >
+                            </div>
+                            <div class="mb-3">
+                                <label for="channelSpeed" class="form-label">
+                                    Швидкість каналу передачі даних (Кбіт/с) 
+                                </label>
+                                <input
+                                    type="text"
+                                    id="channelSpeed"
+                                    value="100000"
+                                    size="10"
+                                    class="form-control"
+                                >
+                            </div>
+                            <div class="mb-3">
+                                <label for="channelCount" class="form-label">
+                                    Кількість каналів прийому/передачі 
+                                </label>
+                                <input
+                                    type="text"
+                                    id="channelCount"
+                                    value="4"
+                                    size="10"
+                                    class="form-control"
+                                >
+                            </div>
+                            <div class="mb-4">
+                                <label for="channelType" class="form-label">
+                                    Тип каналу прийому/передачі
+                                </label>
+                                <select
+                                    id="channelType"
+                                    class="form-select"
+                                >
+                                    <option value="SIMPLEX">
+                                        Напівдуплексний
+                                    </option>
+                                    <option value="DUPLEX" selected>
+                                        Дуплексний
+                                    </option>
+                                </select> 
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="serverCount" class="form-label">
+                                    Кількість серверів (обслуговуючих пристроїв)
+                                </label>
+                                <input
+                                    type="text"
+                                    id="serverCount"
+                                    value="50"
+                                    size="10"
+                                    class="form-control"
+                                >
+                            </div>
+                            <div class="mb-3">
+                                <label for="responseSize" class="form-label">
+                                    Середній розмір відповіді клієнту (Kбіт)
+                                </label>
+                                <input
+                                    type="text"
+                                    id="responseSize"
+                                    value="50"
+                                    size="10"
+                                    class="form-control"
+                                >
+                            </div>
+                            <div class="mb-3">
+                                <label for="requestCount" class="form-label">
+                                    Середня кількість запитів від
+                                    одного клієнта за одну хвилину
+                                </label>
+                                <input
+                                    type="text"
+                                    id="requestCount"
+                                    value="10"
+                                    size="10"
+                                    class="form-control"
+                                >
+                            </div>
+                            <div class="mb-3">
+                                <label for="operationCountPerRequest" class="form-label">
+                                    Середня кількість операцій для обробки 1 запиту
+                                </label>
+                                <input
+                                    type="text"
+                                    id="operationCountPerRequest"
+                                    value="500000"
+                                    size="10"
+                                    class="form-control"
+                                >
+                            </div>
+                            <div class="mb-3">
+                                <label for="processorFrequency" class="form-label">
+                                    Тактова частота процесору сервера (МГц) 
+                                </label>
+                                <input
+                                    type="text"
+                                    id="processorFrequency"
+                                    value="1000"
+                                    size="10"
+                                    class="form-control"
+                                >
+                            </div>
+                            <div class="mb-3">
+                                <label for="tactCountPerOperation" class="form-label">
+                                    Середня кількість тактів на обробку 1 операції
+                                </label>
+                                <input
+                                    type="text"
+                                    id="tactCountPerOperation"
+                                    value="10"
+                                    size="10"
+                                    class="form-control"
+                                >
+                            </div>
+                        </div>
                     </div>
                     <div class="d-grid gap-1">
-                        <input type="button" class="btn bg-yellow" onClick="calculateHighLoadParams()" value="Обчислити" name="Button">
+                        <input
+                            type="button"
+                            class="btn bg-yellow"
+                            onClick="calculateHighLoadParams()"
+                            value="Обчислити"
+                            name="Button"
+                        >
                     </div>
                 </form>
                 <div id="high_load_calculation_output" class="mt-5">
