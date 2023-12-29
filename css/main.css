@@ -4,6 +4,7 @@
 
 .side-frame {
     word-wrap: break-word;
+    min-height: 100vh;
 }
 
 @media only screen and (min-width: 1100px) {
@@ -47,6 +48,15 @@ svg {
 
 .bg-yellow {
     background-color: #FFDF39;
+}
+
+.btn-yellow {
+    background-color: #FFDF39;
+    border-color: #FFDF39;
+}
+
+.btn-yellow:hover {
+    background-color: #ffd600;
 }
 
 th {
