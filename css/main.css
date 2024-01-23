@@ -85,3 +85,15 @@ th {
 .side-frame > ul a:hover {
     color: black;
 }
+
+td > mjx-container { 
+    text-align: left !important;
+}
+
+mjx-container {
+    color: black;
+}
+
+.formulas_left > mjx-container { 
+    text-align: left !important;
+}
